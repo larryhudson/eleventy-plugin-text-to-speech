@@ -6,6 +6,11 @@ This is a work in progress - I'm still working out the best way to make this a p
 
 This plugin is based on the example project here: [https://11ty-text-to-mp3.netlify.app/](https://11ty-text-to-mp3.netlify.app/)
 
+## To do list
+
+- Generated audio cuts off at 10 mins - this is a limitation with Azure's API. We can get around this by splitting up the text into chunks and sending separate requests, then concatenating the audio buffer
+- Should allow you to iterate over any data, not just an Eleventy collection - should make this configurable so you can loop over global data etc. Should be able to use any content, not just templateContent.
+
 ## How to get started
 
 1. Install the package with npm or yarn:

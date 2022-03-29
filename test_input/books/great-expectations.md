@@ -4,6 +4,8 @@ date: 2022-03-29
 description: Great Expectations is the thirteenth novel by Charles Dickens and his penultimate completed novel. It depicts the education of an orphan nicknamed Pip (the book is a bildungsroman, a coming-of-age story).
 mp3Url: /mp3/great-expectations.mp3
 layout: layouts/post.njk
+textToSpeechPluginOptions:
+  voiceName: en-IE-ConnorNeural
 ---
 
 My father’s family name being Pirrip, and my Christian name Philip, my infant tongue could make of both names nothing longer or more explicit than Pip. So, I called myself Pip, and came to be called Pip.

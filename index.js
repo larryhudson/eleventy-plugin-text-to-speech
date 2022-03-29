@@ -1,58 +1,51 @@
 require("dotenv").config();
 const lodashMerge = require("lodash.merge");
+const fs = require("fs");
 const fsPromises = require("fs/promises");
-const { generatePodcastFeed } = require("./utils/podcast-feed");
+
 const { convertHtmlToAudio } = require("./utils/text-to-speech");
 
-const TTSAudioPlugin = (eleventyConfig, suppliedOptions) => {
+const TextToSpeechPlugin = (eleventyConfig, suppliedOptions) => {
   const defaultOptions = {
     mp3UrlDataKey: `mp3Url`,
-    siteOutputDir: `_site`,
-    textToSpeech: {
-      language: "en-AU",
-      voiceName: "en-AU-WilliamNeural",
-      resourceKey: process.env.AZURE_SPEECH_RESOURCE_KEY,
-      region: process.env.AZURE_SPEECH_REGION,
-      tmpDirName: `.tmp-eleventy-plugin-text-to-speech`, // don't make this settable
-    },
-    podcast: {
-      generateFeed: false,
-      infoFilename: `/podcast-info.json`,
-      feedOutputPath: `/podcast.xml`,
-      feedInfo: {},
-    },
+    voiceName: "en-AU-WilliamNeural",
+    resourceKey: process.env.AZURE_SPEECH_RESOURCE_KEY,
+    region: process.env.AZURE_SPEECH_REGION,
   };
 
   const options = lodashMerge(defaultOptions, suppliedOptions);
 
-  eleventyConfig.addGlobalData("ttsAudioOptions", options);
+  eleventyConfig.addGlobalData("textToSpeechPluginOptions", options);
 
-  eleventyConfig.addCollection("generateMp3", function (collectionApi) {
-    return collectionApi.getAll().filter(function (item) {
-      return options.mp3UrlDataKey in item.data;
-    });
-  });
+  eleventyConfig.addCollection(
+    "textToSpeechPluginPages",
+    function (collectionApi) {
+      return collectionApi.getAll().filter(function (item) {
+        return options.mp3UrlDataKey in item.data;
+      });
+    }
+  );
+
+  const TMP_FOLDER_NAME = ".tmp-eleventy-plugin-text-to-speech";
 
   eleventyConfig.on("eleventy.before", async () => {
-    await fsPromises.mkdir(".tmp-eleventy-plugin-text-to-speech");
+    if (!fs.existsSync(TMP_FOLDER_NAME))
+      await fsPromises.mkdir(TMP_FOLDER_NAME);
   });
 
   eleventyConfig.on("eleventy.after", async () => {
-    await fsPromises.rmdir(".tmp-eleventy-plugin-text-to-speech");
+    if (fs.existsSync(TMP_FOLDER_NAME))
+      await fsPromises.rm(TMP_FOLDER_NAME, { recursive: true });
   });
-
-  if (options.podcast.generateFeed) {
-    eleventyConfig.on("eleventy.after", () => generatePodcastFeed(options));
-  }
 };
 
 class AudioVersionTemplate {
   data() {
     return {
       permalink: (data) =>
-        data.mp3Page.data[data.ttsAudioOptions.mp3UrlDataKey],
+        data.mp3Page.data[data.textToSpeechPluginOptions.mp3UrlDataKey],
       pagination: {
-        data: "collections.generateMp3",
+        data: "collections.textToSpeechPluginPages",
         size: 1,
         alias: "mp3Page",
       },
@@ -60,41 +53,15 @@ class AudioVersionTemplate {
   }
 
   async render(data) {
+    // console.log(data.mp3Page);
     return await convertHtmlToAudio(
       data.mp3Page.templateContent,
-      data.ttsAudioOptions.textToSpeech
-    );
-  }
-}
-
-class PodcastInfoTemplate {
-  data() {
-    return {
-      permalink: (data) => data.ttsAudioOptions.podcast.infoFilename,
-    };
-  }
-
-  async render(data) {
-    console.log(data);
-    return JSON.stringify(
-      data.collections.generateMp3.map((mp3Page) => ({
-        title: mp3Page.data.title,
-        description: mp3Page.data.description,
-        date: mp3Page.data.date,
-        mp3Url: mp3Page.data[data.ttsAudioOptions.mp3UrlDataKey],
-        pageUrlWithSite: `${data.ttsAudioOptions.podcast.feedInfo.siteUrl}${mp3Page.url}`,
-        mp3UrlWithSite: `${data.ttsAudioOptions.podcast.feedInfo.siteUrl}${
-          mp3Page.data[data.ttsAudioOptions.mp3UrlDataKey]
-        }`,
-      })),
-      null,
-      2
+      data.mp3Page.data.textToSpeechPluginOptions
     );
   }
 }
 
 module.exports = {
-  TTSAudioPlugin,
+  TextToSpeechPlugin,
   AudioVersionTemplate,
-  PodcastInfoTemplate,
 };

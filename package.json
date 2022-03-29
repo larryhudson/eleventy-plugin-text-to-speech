@@ -19,8 +19,6 @@
     "js-md5": "^0.7.3",
     "lodash.merge": "^4.6.2",
     "microsoft-cognitiveservices-speech-sdk": "^1.20.0",
-    "mp3-duration": "^1.1.0",
-    "netlify-plugin-cache": "^1.0.3",
-    "podcast": "^2.0.0"
+    "netlify-plugin-cache": "^1.0.3"
   }
 }

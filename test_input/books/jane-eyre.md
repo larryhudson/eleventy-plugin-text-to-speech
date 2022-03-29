@@ -4,6 +4,8 @@ date: 2022-03-25
 description: Jane Eyre is a novel by English writer Charlotte Brontë, published under the pen name "Currer Bell", on 16 October 1847, by Smith, Elder & Co. of London.
 mp3Url: /mp3/jane-eyre.mp3
 layout: layouts/post.njk
+textToSpeechPluginOptions:
+  voiceName: en-AU-NatashaNeural
 ---
 
 There was no possibility of taking a walk that day. We had been wandering, indeed, in the leafless shrubbery an hour in the morning; but since dinner (Mrs. Reed, when there was no company, dined early) the cold winter wind had brought with it clouds so sombre, and a rain so penetrating, that further outdoor exercise was now out of the question.

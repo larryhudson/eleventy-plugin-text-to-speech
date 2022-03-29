@@ -1,17 +1,8 @@
-const { TTSAudioPlugin } = require("./index");
+const { TextToSpeechPlugin } = require("./index");
 
 module.exports = function (eleventyConfig) {
-  eleventyConfig.addPlugin(TTSAudioPlugin, {
-    textToSpeech: {
-      language: "en-IE",
-      voiceName: "en-IE-EmilyNeural",
-    },
-    podcast: {
-      generateFeed: true,
-      feedData: {
-        title: "My silly title",
-      },
-    },
+  eleventyConfig.addPlugin(TextToSpeechPlugin, {
+    voiceName: "en-GB-LibbyNeural",
   });
 
   return {

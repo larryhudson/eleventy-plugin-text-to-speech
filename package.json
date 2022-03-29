@@ -1,0 +1,26 @@
+{
+  "name": "eleventy-plugin-text-to-speech",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx @11ty/eleventy",
+    "start": "npx @11ty/eleventy --watch --serve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@11ty/eleventy": "^2.0.0-canary.4",
+    "@11ty/eleventy-fetch": "^3.0.0",
+    "dotenv": "^16.0.0",
+    "html-to-text": "^8.1.0",
+    "js-md5": "^0.7.3",
+    "lodash.merge": "^4.6.2",
+    "microsoft-cognitiveservices-speech-sdk": "^1.20.0",
+    "mp3-duration": "^1.1.0",
+    "netlify-plugin-cache": "^1.0.3",
+    "podcast": "^2.0.0"
+  }
+}

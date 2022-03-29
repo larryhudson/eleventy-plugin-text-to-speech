@@ -1,0 +1,7 @@
+_site
+.cache
+node_modules
+.tmp-eleventy-plugin-text-to-speech
+.env
+package-lock.json
+.DS_Store

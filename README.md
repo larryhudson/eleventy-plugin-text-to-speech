@@ -36,7 +36,7 @@ const {TextToSpeechPlugin} = require('eleventy-plugin-text-to-speech')
 
 eleventyConfig.addPlugin(TextToSpeechPlugin, {
     textToSpeech: {
-        voiceName: 'en-US-JennyNeural' // get voice name from here:
+        voiceName: 'en-US-JennyNeural' // get voice name from here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=speechtotext#prebuilt-neural-voices
     }
 })
 

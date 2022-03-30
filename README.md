@@ -17,11 +17,11 @@ This plugin is based on the example project here: [https://11ty-text-to-mp3.netl
 
 ### Create your Azure resource
 
-2. Sign up for an [Azure account](https://portal.azure.com/)
-3. In the Azure portal, add a new resource with the 'Cognitive Services - Speech service'. Choose the free tier. Take note of the 'location' or 'region' that you choose when you create the resource.
-4. Once you've created the new resource, click 'Manage keys' and get your API key
-5. Go to the [list of Azure regions](https://gist.github.com/ausfestivus/04e55c7d80229069bf3bc75870630ec8) and find the short name (in the last column) of the region you chose above.
-6. Create a `.env` file with the following variables:
+1. Sign up for an [Azure account](https://portal.azure.com/)
+2. In the Azure portal, add a new resource with the 'Cognitive Services - Speech service'. Choose the free tier. Take note of the 'location' or 'region' that you choose when you create the resource.
+3. Once you've created the new resource, click 'Manage keys' and get your API key
+4. Go to the [list of Azure regions](https://gist.github.com/ausfestivus/04e55c7d80229069bf3bc75870630ec8) and find the short name (in the last column) of the region you chose above.
+5. Create a `.env` file with the following variables:
 
 ```
 AZURE_SPEECH_RESOURCE_KEY=<API KEY FOR YOUR AZURE SPEECH SERVICE>
@@ -38,7 +38,7 @@ OR
 yarn add https://github.com/larryhudson/eleventy-plugin-text-to-speech
 ```
 
-7. Add the plugin to your `.eleventy.js` file:
+2. Add the plugin to your `.eleventy.js` file:
 
 ```js
 const { TextToSpeechPlugin } = require("eleventy-plugin-text-to-speech");
@@ -54,7 +54,9 @@ module.exports = function (eleventyConfig) {
 };
 ```
 
-8. Add a new file `mp3-version.11ty.js` (you can name this whatever you want) to your input directory with this code:
+### Add the template file to your input directory
+
+1. Add a new file `mp3-version.11ty.js` (you can name this whatever you want) to your input directory with this code:
 
 ```js
 const { AudioVersionTemplate } = require("eleventy-plugin-text-to-speech");
@@ -63,9 +65,9 @@ const { AudioVersionTemplate } = require("eleventy-plugin-text-to-speech");
 module.exports = AudioVersionTemplate;
 ```
 
-9. On the pages that you want to generate a MP3 from, add `mp3Url` to the frontmatter, pointing to the desired permalink of the generated MP3 file, eg. `/mp3/blog-post-1.mp3`. See below for more configuration options.
+2. On the pages that you want to generate a MP3 from, add `mp3Url` to the frontmatter, pointing to the desired permalink of the generated MP3 file, eg. `/mp3/blog-post-1.mp3`. See below for more configuration options.
 
-10. Run your Eleventy build and it will .
+3. Run your Eleventy build and it will generate audio versions of your content. Then, you can refer to the `mp3Url` in your templates to point to the generated MP3 file.
 
 ## Recommended: caching between Netlify builds
 

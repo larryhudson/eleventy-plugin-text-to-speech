@@ -15,6 +15,7 @@
     "@11ty/eleventy": "^2.0.0-canary.4",
     "@11ty/eleventy-fetch": "^3.0.0",
     "dotenv": "^16.0.0",
+    "eleventy-plugin-text-to-speech": "github:larryhudson/eleventy-plugin-text-to-speech",
     "html-to-text": "^8.1.0",
     "js-md5": "^0.7.3",
     "lodash.merge": "^4.6.2",

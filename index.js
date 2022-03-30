@@ -41,7 +41,6 @@ const TextToSpeechPlugin = (eleventyConfig, suppliedOptions) => {
 };
 
 class AudioVersionTemplate {
-  //
   mp3PagesArray = "collections.textToSpeechPluginPages";
   getContentFromData = (mp3Page) => mp3Page.templateContent;
   getMp3UrlFromData = (mp3Page) =>
@@ -64,8 +63,6 @@ class AudioVersionTemplate {
   }
 
   async render(data) {
-    console.log(data.mp3Page);
-
     const preprocessedContent = await this.preprocessContent(
       this.getContentFromData(data.mp3Page)
     );

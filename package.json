@@ -1,16 +1,36 @@
 {
   "name": "eleventy-plugin-text-to-speech",
   "version": "1.0.0",
-  "description": "",
+  "description": "Generate audio versions of your Eleventy content using Azure text to speech",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx @11ty/eleventy",
     "start": "npx @11ty/eleventy --watch --serve"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "bugs": {
+    "url": "https://github.com/larryhudson/eleventy-plugin-text-to-speech/issues"
+  },
+  "homepage": "https://github.com/larryhudson/eleventy-plugin-text-to-speech#readme",
+  "keywords": [
+    "eleventy",
+    "eleventy-plugin",
+    "text-to-speech",
+    "azure"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/larryhudson/eleventy-plugin-text-to-speech.git"
+  },
+  "author": {
+    "name": "Larry Hudson",
+    "email": "larryhudson@hey.com",
+    "url": "https://github.com/larryhudson"
+  },
   "dependencies": {
     "@11ty/eleventy": "^2.0.0-canary.4",
     "@11ty/eleventy-fetch": "^3.0.0",
@@ -19,7 +39,6 @@
     "html-to-text": "^8.1.0",
     "js-md5": "^0.7.3",
     "lodash.merge": "^4.6.2",
-    "microsoft-cognitiveservices-speech-sdk": "^1.20.0",
-    "netlify-plugin-cache": "^1.0.3"
+    "microsoft-cognitiveservices-speech-sdk": "^1.20.0"
   }
 }

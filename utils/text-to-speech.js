@@ -12,8 +12,6 @@ async function convertTextToSpeech(text, options) {
   // Check cache for generated audio based on unique hash of text content
   const textHash = md5(text);
 
-  console.log(options);
-
   let cachedAudio = new AssetCache(textHash);
 
   if (cachedAudio.isCacheValid("365d")) {

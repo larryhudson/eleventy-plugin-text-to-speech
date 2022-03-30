@@ -33,9 +33,9 @@ AZURE_SPEECH_REGION=<SHORT NAME FOR THE RESOURCE REGION>
 1. Install the package with npm or yarn:
 
 ```
-npm install https://github.com/larryhudson/eleventy-plugin-text-to-speech
+npm install eleventy-plugin-text-to-speech
 OR
-yarn add https://github.com/larryhudson/eleventy-plugin-text-to-speech
+yarn add eleventy-plugin-text-to-speech
 ```
 
 2. Add the plugin to your `.eleventy.js` file:

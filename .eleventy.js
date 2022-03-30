@@ -5,6 +5,14 @@ module.exports = function (eleventyConfig) {
     voiceName: "en-GB-LibbyNeural",
   });
 
+  eleventyConfig.addGlobalData("myData", [
+    {
+      content: "My name is Larry",
+      permalink: "/test",
+      mp3Url: "/test.mp3",
+    },
+  ]);
+
   return {
     dir: {
       input: "test_input",

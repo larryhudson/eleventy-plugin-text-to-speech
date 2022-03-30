@@ -8,9 +8,7 @@ async function convertHtmlToPlainText(html) {
   return convert(html, { wordwrap: 0 });
 }
 
-async function convertHtmlToAudio(html, options) {
-  const text = await convertHtmlToPlainText(html);
-
+async function convertTextToSpeech(text, options) {
   // Check cache for generated audio based on unique hash of text content
   const textHash = md5(text);
 
@@ -89,6 +87,6 @@ async function convertHtmlToAudio(html, options) {
 }
 
 module.exports = {
-  convertHtmlToAudio,
+  convertTextToSpeech,
   convertHtmlToPlainText,
 };

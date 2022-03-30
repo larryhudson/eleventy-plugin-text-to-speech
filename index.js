@@ -2,8 +2,9 @@ require("dotenv").config();
 const lodashMerge = require("lodash.merge");
 const fs = require("fs");
 const fsPromises = require("fs/promises");
+const htmlToText = require("html-to-text");
 
-const { convertHtmlToAudio } = require("./utils/text-to-speech");
+const { convertTextToSpeech } = require("./utils/text-to-speech");
 
 const TextToSpeechPlugin = (eleventyConfig, suppliedOptions) => {
   const defaultOptions = {
@@ -40,12 +41,22 @@ const TextToSpeechPlugin = (eleventyConfig, suppliedOptions) => {
 };
 
 class AudioVersionTemplate {
+  //
+  mp3PagesArray = "collections.textToSpeechPluginPages";
+  getContentFromData = (mp3Page) => mp3Page.templateContent;
+  getMp3UrlFromData = (mp3Page) =>
+    mp3Page.data[mp3Page.data.textToSpeechPluginOptions.mp3UrlDataKey];
+
+  preprocessContent = (content) => content;
+
+  convertContentToPlainText = async (content) =>
+    htmlToText.convert(content, { wordwrap: 0 });
+
   data() {
     return {
-      permalink: (data) =>
-        data.mp3Page.data[data.textToSpeechPluginOptions.mp3UrlDataKey],
+      permalink: (data) => this.getMp3UrlFromData(data.mp3Page),
       pagination: {
-        data: "collections.textToSpeechPluginPages",
+        data: this.mp3PagesArray,
         size: 1,
         alias: "mp3Page",
       },
@@ -53,10 +64,19 @@ class AudioVersionTemplate {
   }
 
   async render(data) {
-    // console.log(data.mp3Page);
-    return await convertHtmlToAudio(
-      data.mp3Page.templateContent,
-      data.mp3Page.data.textToSpeechPluginOptions
+    console.log(data.mp3Page);
+
+    const preprocessedContent = await this.preprocessContent(
+      this.getContentFromData(data.mp3Page)
+    );
+
+    const plainTextContent = await this.convertContentToPlainText(
+      preprocessedContent
+    );
+
+    return await convertTextToSpeech(
+      plainTextContent,
+      data.textToSpeechPluginOptions
     );
   }
 }

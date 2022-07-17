@@ -8,7 +8,43 @@ async function convertHtmlToPlainText(html) {
   return convert(html, { wordwrap: 0 });
 }
 
+function chunkText(text) {
+  const MAX_CHUNK_LENGTH = 7000;
+
+  const textLines = text.split("\n");
+
+  let chunks = [];
+  let currentChunkLines = [];
+
+  textLines.forEach((lineText) => {
+    const currentChunkLength = currentChunkLines.join("\n").length;
+
+    if (currentChunkLength > MAX_CHUNK_LENGTH) {
+      chunks.push(currentChunkLines.join("\n"));
+      currentChunkLines = [];
+    } else {
+      currentChunkLines.push(lineText);
+    }
+  });
+  if (currentChunkLines.length > 0) chunks.push(currentChunkLines.join("\n"));
+
+  return chunks;
+}
+
 async function convertTextToSpeech(text, options) {
+  // chunk text
+  const chunks = chunkText(text);
+
+  // convert chunks to audio buffers
+  const audioBuffers = await Promise.all(
+    chunks.map((chunk) => convertTextChunkToSpeech(chunk, options))
+  );
+
+  // join the audio buffers
+  return Buffer.concat(audioBuffers);
+}
+
+async function convertTextChunkToSpeech(text, options) {
   // Check cache for generated audio based on unique hash of text content
   const textHash = md5(text);
 

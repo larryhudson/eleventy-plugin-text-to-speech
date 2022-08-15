@@ -3,6 +3,7 @@ const { TextToSpeechPlugin } = require("./index");
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(TextToSpeechPlugin, {
     voiceName: "en-GB-LibbyNeural",
+    saveTimings: true,
   });
 
   eleventyConfig.addGlobalData("myData", [

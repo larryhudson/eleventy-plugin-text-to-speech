@@ -12,6 +12,7 @@ const TextToSpeechPlugin = (eleventyConfig, suppliedOptions) => {
     voiceName: "en-AU-WilliamNeural",
     resourceKey: process.env.AZURE_SPEECH_RESOURCE_KEY,
     region: process.env.AZURE_SPEECH_REGION,
+    saveTimings: false,
   };
 
   const options = lodashMerge(defaultOptions, suppliedOptions);
@@ -51,6 +52,8 @@ class AudioVersionTemplate {
   convertContentToPlainText = async (content) =>
     htmlToText.convert(content, { wordwrap: 0 });
 
+  contentMode = 'text';
+
   data() {
     return {
       permalink: (data) => this.getMp3UrlFromData(data.mp3Page),
@@ -73,7 +76,9 @@ class AudioVersionTemplate {
 
     return await convertTextToSpeech(
       plainTextContent,
-      data.textToSpeechPluginOptions
+      data.textToSpeechPluginOptions,
+      this.contentMode || 'text',
+      data.mp3Page
     );
   }
 }

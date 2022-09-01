@@ -125,8 +125,16 @@ async function convertTextChunkToSpeech(text, options, contentMode="text", pageD
 
   const audioArrayBuffer = await new Promise((resolve) => {
 
-    synthesizer.speakTextAsync(
-      text,
+    const ssmlText = `<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="${options.voiceName.slice(0, 5)}">
+      <voice name="${options.voiceName}">
+      <prosody rate="${options.speed}" pitch="0%">
+      ${text}
+      </prosody>
+      </voice>
+      </speak>`
+
+    synthesizer.speakSsmlAsync(
+      ssmlText,
       async (result) => {
         synthesizer.close();
         if (result) {

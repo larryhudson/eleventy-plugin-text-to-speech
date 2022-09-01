@@ -14,77 +14,63 @@ const addSpansToText = (text, timings) => {
 }
 
 const addSpansToHtml = (html, timingsArr) => {
-    console.log({html})
+
+    // JSDOM + createTreeWalker give us an iterator of all the text nodes in the document    
     const jsdom = new JSDOM();
     const document = new jsdom.window.DOMParser().parseFromString(`<!DOCTYPE html><body>${html}</body>`, 'text/html')
     const treeWalker = document.createTreeWalker(document.body, 4, (node) => !node.parentElement.classList.contains('hide-from-tts'))
 
+    // Array.prototype.entries() gives us an iterator of all the timings
     const timings = timingsArr.entries()
 
-    let timingEntry = timings.next().value
-    let timingIndex = timingEntry[0]
-    let currentTiming = timingEntry[1]
+    let timingEntry = timings.next()
 
-    let nodesToRemove = []
+    function hasMatch(str, substr) {
+        return str.indexOf(substr) !== -1
+    }
 
-    while (treeWalker.nextNode()) {
+    // treeWalker.nextNode will be called at the end of this loop
+    while (!timingEntry.done && treeWalker.nextNode()) {
+
         const currentNode = treeWalker.currentNode
-        let workingNodeText = currentNode.data
 
-        let textToWrap = currentTiming.text
+        // if the current timing entry text isn't in the current node, continue to the next node
+        if (!hasMatch(treeWalker.currentNode.data, timingEntry.value[1].text)) continue;
 
-        let textStringsToWrap = []
+        // while the current node has the current timing text in it
+        while (!timingEntry.done && hasMatch(currentNode.data, timingEntry.value[1].text)) {
 
-        const hasMatch = () => workingNodeText.indexOf(textToWrap) !== -1
-
-        if (!hasMatch()) continue;
-
-        while (workingNodeText && hasMatch()) {
-            const indexAfter = workingNodeText.indexOf(textToWrap) + textToWrap.length
-            const spaceAfter = workingNodeText[indexAfter] === " "
-
-            textStringsToWrap.push({textToWrap, timingIndex, spaceAfter})
-
-            workingNodeText = workingNodeText.slice(
-                workingNodeText.indexOf(textToWrap) + textToWrap.length
-            )
-
-            timingEntry = timings.next().value
-
-            if (timingEntry) {
-                timingIndex = timingEntry[0]
-                currentTiming = timingEntry[1]
-                textToWrap = currentTiming.text
-            } else {
-                continue;
+            // if the match is not at the very start of the text node,
+            // eg. if our text node was "(Hello)" and the timing text was "Hello", the index of the match would be 1.
+            // insert a new text with the chars that come before the match.
+            if (currentNode.data.indexOf(timingEntry.value[1].text) > 0) {
+                let indexOfMatch = currentNode.data.indexOf(timingEntry.value[1].text)
+                const beforeMatchNode = document.createTextNode(
+                    currentNode.data.substring(0, indexOfMatch)
+                )
+                currentNode.parentElement.insertBefore(beforeMatchNode, currentNode)
+                // then remove those chars from the node
+                currentNode.data = currentNode.data.substring(indexOfMatch)
             }
-        }
 
-        if (textStringsToWrap.length > 0) {
-            wrapTextInNode(currentNode, textStringsToWrap, document)
-            nodesToRemove.push(currentNode)
+            // now we create a new span element for our match
+            const spanElement = document.createElement('span')
+            spanElement.setAttribute('data-timing-index', timingEntry.value[0])
+            spanElement.textContent = timingEntry.value[1].text
+
+            // we insert it before the current node
+            currentNode.parentElement.insertBefore(spanElement, currentNode)
+
+            // we remove the match from the node text
+            currentNode.data = currentNode.data.replace(timingEntry.value[1].text, '')
+
+            // continue to the next timing
+            timingEntry = timings.next()
         }
     }
 
-    nodesToRemove.forEach(node => node.parentNode.removeChild(node))
-
+    // return our new HTML
     return document.body.innerHTML;
-}
-
-function wrapTextInNode(node, textStringsToWrap, document) {
-    const parentElement = node.parentElement;
-
-    for (const {textToWrap, timingIndex, spaceAfter} of textStringsToWrap) {
-        const spanElement = document.createElement('span')
-        spanElement.setAttribute('data-timing-index', timingIndex)
-        spanElement.textContent = textToWrap
-        parentElement.insertBefore(spanElement, node)
-        if (spaceAfter) {
-            const spaceNode = document.createTextNode(' ')
-            parentElement.insertBefore(spaceNode, node)
-        }
-
-    }
 }
 
 module.exports = {addSpansToText, addSpansToHtml}

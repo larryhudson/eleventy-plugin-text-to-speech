@@ -13,6 +13,7 @@ const TextToSpeechPlugin = (eleventyConfig, suppliedOptions) => {
     resourceKey: process.env.AZURE_SPEECH_RESOURCE_KEY,
     region: process.env.AZURE_SPEECH_REGION,
     saveTimings: false,
+    speed: "0%",
   };
 
   const options = lodashMerge(defaultOptions, suppliedOptions);

@@ -14,6 +14,7 @@ const TextToSpeechPlugin = (eleventyConfig, suppliedOptions) => {
     region: process.env.AZURE_SPEECH_REGION,
     saveTimings: false,
     speed: "0%",
+    outputDir: "_site",
   };
 
   const options = lodashMerge(defaultOptions, suppliedOptions);

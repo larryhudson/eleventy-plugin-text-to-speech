@@ -67,7 +67,7 @@ async function convertTextChunkToSpeech(text, options, contentMode="text", pageD
 
       const timingsUrl = mp3Url + ".timings.json"
 
-      await fsPromises.writeFile(`_site${timingsUrl}`, timingsJson, {
+      await fsPromises.writeFile(`${options.outputDir}${timingsUrl}`, timingsJson, {
         encoding: 'utf-8'
       })
     }

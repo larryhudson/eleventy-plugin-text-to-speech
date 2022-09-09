@@ -168,7 +168,7 @@ async function convertTextChunkToSpeech(text, options, contentMode="text", pageD
     await cachedTimings.save(timingsData, "json");
     const timingsJson = JSON.stringify(timingsData)
 
-    await fsPromises.writeFile(`_site${timingsUrl}`, timingsJson, {
+    await fsPromises.writeFile(`${options.outputDir}${timingsUrl}`, timingsJson, {
       encoding: 'utf-8'
     })
 

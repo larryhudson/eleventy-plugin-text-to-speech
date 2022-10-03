@@ -5,6 +5,7 @@ const { convert } = require("html-to-text");
 const path = require("path");
 const fsPromises = require('fs/promises');
 const { addSpansToHtml, addSpansToText } = require("./add-spans");
+const {encode} = require('html-entities');
 
 async function convertHtmlToPlainText(html) {
   return convert(html, { wordwrap: 0 });
@@ -125,10 +126,12 @@ async function convertTextChunkToSpeech(text, options, contentMode="text", pageD
 
   const audioArrayBuffer = await new Promise((resolve) => {
 
+    const encodedText = encode(text);
+
     const ssmlText = `<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="${options.voiceName.slice(0, 5)}">
       <voice name="${options.voiceName}">
       <prosody rate="${options.speed}" pitch="0%">
-      ${text}
+      ${encodedText}
       </prosody>
       </voice>
       </speak>`

@@ -4,7 +4,8 @@ const fs = require("fs");
 const fsPromises = require("fs/promises");
 const htmlToText = require("html-to-text");
 
-const { convertTextToSpeech } = require("./utils/text-to-speech");
+const { convertTextToSpeech, getSavedTimingsForMp3 } = require("./utils/text-to-speech");
+const { addSpansToHtml, addSpansToText } = require('./utils/add-spans');
 
 const TextToSpeechPlugin = (eleventyConfig, suppliedOptions) => {
   const defaultOptions = {
@@ -29,6 +30,23 @@ const TextToSpeechPlugin = (eleventyConfig, suppliedOptions) => {
       });
     }
   );
+
+  eleventyConfig.addFilter('getTimingsJsArray', async function (url) {
+    const savedTimings = await getSavedTimingsForMp3(url)
+    return JSON.stringify(savedTimings, null).replace(/</g, '\\u003c')
+  })
+
+  eleventyConfig.addFilter('getHtmlWithSpans', async function (url, content) {
+    const savedTimings = await getSavedTimingsForMp3(url)
+    const htmlWithSpans = addSpansToHtml(content, savedTimings)
+    return htmlWithSpans
+  })
+
+  eleventyConfig.addFilter('getTextWithSpans', async function (url, content) {
+    const savedTimings = await getSavedTimingsForMp3(url)
+    const textWithSpans = addSpansToText(content, savedTimings)
+    return textWithSpans
+  })
 
   const TMP_FOLDER_NAME = ".tmp-eleventy-plugin-text-to-speech";
 
@@ -88,4 +106,5 @@ class AudioVersionTemplate {
 module.exports = {
   TextToSpeechPlugin,
   AudioVersionTemplate,
+  getSavedTimingsForMp3
 };

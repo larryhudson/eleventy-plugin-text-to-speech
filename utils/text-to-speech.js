@@ -3,8 +3,6 @@ const { AssetCache } = require("@11ty/eleventy-fetch");
 const md5 = require("js-md5");
 const { convert } = require("html-to-text");
 const path = require("path");
-const fsPromises = require('fs/promises');
-const { addSpansToHtml, addSpansToText } = require("./add-spans");
 const {encode} = require('html-entities');
 
 async function convertHtmlToPlainText(html) {
@@ -47,31 +45,26 @@ async function convertTextToSpeech(text, options, contentMode="text", pageData={
   return Buffer.concat(audioBuffers);
 }
 
+async function getSavedTimingsForMp3(mp3Url) {
+  let cachedTimings = new AssetCache(`${mp3Url}_timing`)
+  if (cachedTimings.isCacheValid('365d')) {
+    return cachedTimings.getCachedValue();
+  }
+}
+
 async function convertTextChunkToSpeech(text, options, contentMode="text", pageData={}) {
   const shouldSaveTimings = options.saveTimings === true
   // Check cache for generated audio based on unique hash of text content
   const textHash = md5(text);
 
   let cachedAudio = new AssetCache(textHash);
-  let cachedTimings = new AssetCache(`${textHash}_timing`)
+  const mp3Url = pageData.data?.mp3Url || pageData.mp3Url
+  let cachedTimings = new AssetCache(`${mp3Url}_timing`)
 
   if (cachedAudio.isCacheValid("365d")) {
     console.log(
       `[eleventy-plugin-text-to-speech] Using cached MP3 data for hash ${textHash}`
     );
-
-    if (shouldSaveTimings && cachedTimings.isCacheValid("365d")) {
-      const timings = await cachedTimings.getCachedValue()
-      const timingsJson = JSON.stringify(timings)
-
-      const mp3Url = pageData.data?.mp3Url || pageData.mp3Url
-
-      const timingsUrl = mp3Url + ".timings.json"
-
-      await fsPromises.writeFile(`${options.outputDir}${timingsUrl}`, timingsJson, {
-        encoding: 'utf-8'
-      })
-    }
 
     return cachedAudio.getCachedValue();
   } else {
@@ -116,9 +109,18 @@ async function convertTextChunkToSpeech(text, options, contentMode="text", pageD
 
   if (shouldSaveTimings) {
     synthesizer.wordBoundary = (_, event) => {
+      const startTime = event.privAudioOffset * 0.0000001
+      const startTimeRounded = parseFloat(
+        startTime.toFixed(4)
+      )
+      const endTime = (event.privAudioOffset + event.privDuration) * 0.0000001
+      const endTimeRounded = parseFloat(
+        endTime.toFixed(4)
+      )
+
       timings.push({
-        startTime: event.privAudioOffset * 0.0000001,
-        endTime: (event.privAudioOffset + event.privDuration) * 0.0000001,
+        startTime: startTimeRounded,
+        endTime: endTimeRounded,
         text: event.privText,
       })
     }
@@ -155,29 +157,9 @@ async function convertTextChunkToSpeech(text, options, contentMode="text", pageD
   });
 
   if (shouldSaveTimings) {
-    const spanifyFunction = contentMode === "html" ? addSpansToHtml : addSpansToText
-    const contentToSpanify = contentMode === "html" ? pageData.templateContent : text
-  
-    const textWithSpans = spanifyFunction(contentToSpanify, timings)
-    const timingsData = {
-      timings,
-      textWithSpans
-    }
-
-    const mp3Url = pageData.data?.mp3Url || pageData.mp3Url
-
-    const timingsUrl = mp3Url + ".timings.json"
-
-    await cachedTimings.save(timingsData, "json");
-    const timingsJson = JSON.stringify(timingsData)
-
-    await fsPromises.writeFile(`${options.outputDir}${timingsUrl}`, timingsJson, {
-      encoding: 'utf-8'
-    })
-
+    await cachedTimings.save(timings, "json");
   } 
 
-  // Save in cache for next time
   const audioBuffer = Buffer.from(audioArrayBuffer);
   await cachedAudio.save(audioBuffer, "buffer");
 
@@ -187,4 +169,5 @@ async function convertTextChunkToSpeech(text, options, contentMode="text", pageD
 module.exports = {
   convertTextToSpeech,
   convertHtmlToPlainText,
+  getSavedTimingsForMp3
 };

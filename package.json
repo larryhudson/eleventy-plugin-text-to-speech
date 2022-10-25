@@ -1,6 +1,6 @@
 {
   "name": "eleventy-plugin-text-to-speech",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Generate audio versions of your Eleventy content using Azure text to speech",
   "main": "index.js",
   "scripts": {

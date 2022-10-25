@@ -16,6 +16,7 @@ const TextToSpeechPlugin = (eleventyConfig, suppliedOptions) => {
     saveTimings: false,
     speed: "0%",
     outputDir: "_site",
+    lexiconUrl: null,
   };
 
   const options = lodashMerge(defaultOptions, suppliedOptions);

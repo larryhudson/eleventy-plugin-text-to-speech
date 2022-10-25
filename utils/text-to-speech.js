@@ -126,12 +126,13 @@ async function convertTextChunkToSpeech(text, options, contentMode="text", pageD
     }
   }
 
-  const audioArrayBuffer = await new Promise((resolve) => {
+  const audioArrayBuffer = await new Promise((resolve, reject) => {
 
     const encodedText = encode(text);
 
     const ssmlText = `<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="${options.voiceName.slice(0, 5)}">
       <voice name="${options.voiceName}">
+      ${options.lexiconUrl ? `<lexicon uri="${options.lexiconUrl}" />` : ''}
       <prosody rate="${options.speed}" pitch="0%">
       ${encodedText}
       </prosody>
@@ -144,6 +145,8 @@ async function convertTextChunkToSpeech(text, options, contentMode="text", pageD
         synthesizer.close();
         if (result) {
           resolve(result.privAudioData);
+        } else {
+          reject(result);
         }
       },
       (error) => {

@@ -121,7 +121,7 @@ async function convertTextChunkToSpeech(text, options, contentMode="text", pageD
       timings.push({
         startTime: startTimeRounded,
         endTime: endTimeRounded,
-        text: event.privText,
+        text: event.privText.trim(), // trim the text in case it starts with a space (that will trip up when adding spans)
       })
     }
   }
